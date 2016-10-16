@@ -536,23 +536,27 @@ class LdapUserConf {
     list($account, $user_entity) = ldap_user_load_user_acct_and_entity($account->getUsername());
 
     if (is_object($account) && property_exists($account, 'uid') && $account->uid == 1) {
-    if (is_object($account) && $account->id() == 1) {
-      $result['status'] = 'fail';
-      $result['error_description'] = 'can not provision drupal user 1';
-      // Do not provision or synch user 1.
-      return $result;
-    }
+      if (is_object($account) && $account->id() == 1) {
+        $result['status'] = 'fail';
+        $result['error_description'] = 'can not provision drupal user 1';
 
-    if ($account == FALSE || $account->isAnonymous()) {
-      $result['status'] = 'fail';
-      $result['error_description'] = 'can not provision ldap user unless corresponding drupal account exists first.';
-      return $result;
-    }
+        // Do not provision or synch user 1.
+        return $result;
+      }
 
-    if (!$this->ldapEntryProvisionServer || !$this->ldapEntryProvisionServer) {
-      $result['status'] = 'fail';
-      $result['error_description'] = 'no provisioning server enabled';
-      return $result;
+      if ($account == FALSE || $account->isAnonymous()) {
+        $result['status'] = 'fail';
+        $result['error_description'] = 'can not provision ldap user unless corresponding drupal account exists first.';
+
+        return $result;
+      }
+
+      if (!$this->ldapEntryProvisionServer || !$this->ldapEntryProvisionServer) {
+        $result['status'] = 'fail';
+        $result['error_description'] = 'no provisioning server enabled';
+
+        return $result;
+      }
     }
 
     $ldap_server = ldap_servers_get_servers($this->ldapEntryProvisionServer, NULL, TRUE);
